@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Breaking Bad Guide</string>
+    <string name="collapse_description">Информация о персонаже</string>
+    <string name="character_label">Персонаж</string>
+    <string name="nickname_label">Также известен как:</string>
+    <string name="birthday_label">Дата рождения:</string>
+    <string name="status_label">Статус:</string>
+    <string name="appearance_label">Появление</string>
+    <string name="appearance_name">Во все тяжкие</string>
+    <string name="actor_label">Актер</string>
+    <string name="description_actor_photo">Фото актера</string>
+    <string name="button_retry">Повтор</string>
+    <string name="occupation_label">Род деятельности</string>
+    <string name="appearance_better_call_saul_name">Лучше звоните Солу</string>
+</resources>

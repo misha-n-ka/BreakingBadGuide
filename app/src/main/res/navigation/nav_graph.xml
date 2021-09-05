@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    android:label="CharDetail Fragment"
+    app:startDestination="@id/charsListFragment">
+    <fragment
+        android:id="@+id/charDetailFragment"
+        android:name="com.breakingBadGuide.ui.fragments.CharDetailFragment"
+        android:label="CharDetailFragment"
+        tools:layout="@layout/fragment_char_details" >
+        <argument
+            android:name="charId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+    <fragment
+        android:id="@+id/charsListFragment"
+        android:name="com.breakingBadGuide.ui.fragments.CharsListFragment"
+        android:label="BB Characters"
+        tools:layout="@layout/fragment_chars_list">
+        <action
+            android:id="@+id/action_charsListFragment_to_charDetailFragment"
+            app:destination="@id/charDetailFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+</navigation>

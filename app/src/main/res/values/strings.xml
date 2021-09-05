@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Breaking Bad Guide</string>
+    <string name="collapse_description">Character Details</string>
+    <string name="character_label">Character</string>
+    <string name="nickname_label">Nickname:</string>
+    <string name="birthday_label">Birthday:</string>
+    <string name="status_label">Status:</string>
+    <string name="occupation_label">Occupation</string>
+    <string name="appearance_label">Appearance</string>
+    <string name="appearance_name">Breaking Bad</string>
+    <string name="actor_label">Actor</string>
+    <string name="description_actor_photo">Actor photo</string>
+    <string name="button_retry">Retry</string>
+    <string name="appearance_better_call_saul_name">Better Call Saul</string>
+</resources>
