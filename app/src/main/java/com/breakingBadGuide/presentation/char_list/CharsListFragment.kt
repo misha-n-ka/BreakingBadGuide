@@ -1,4 +1,4 @@
-package com.breakingBadGuide.ui.fragments
+package com.breakingBadGuide.presentation.char_list
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,11 +14,11 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.breakingBadGuide.R
-import com.breakingBadGuide.data.responses.AllCharactersResponse
+import com.breakingBadGuide.data.models.AllCharactersItem
 import com.breakingBadGuide.databinding.FragmentCharsListBinding
-import com.breakingBadGuide.utils.CharactersListAdapter
-import com.breakingBadGuide.utils.StateWrapper
-import com.breakingBadGuide.viewModels.ListViewModel
+import com.breakingBadGuide.presentation.ScreenStateWrapper
+import com.breakingBadGuide.presentation.char_list.list.CharactersListAdapter
+import com.breakingBadGuide.utils.collectLatestLifecycleAware
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -39,31 +39,41 @@ class CharsListFragment : Fragment(R.layout.fragment_chars_list) {
         // getting all characters array
         viewModel.getAllCharacters()
 
+        val adapter = CharactersListAdapter {
+            goToCharacterDetails(it.charId)
+        }
+
+        setupRecyclerView(adapter)
+        subscribeUi(adapter)
+        setupListener()
+        return binding.root
+    }
+
+    private fun setupListener() {
         // set OnClick Listener for reloading character if Error occurred
         binding.btnRetry.setOnClickListener {
             viewModel.getAllCharacters()
         }
+    }
 
-        // collecting viewModel.state for observes fragment state
-        lifecycleScope.launchWhenStarted {
-            viewModel.state.collect { state ->
-                when (state) {
-                    is StateWrapper.Success -> {
-                        showList()
-                        setupRecyclerView(state)
-                    }
-                    is StateWrapper.Fail -> {
-                        showError()
-                        binding.tvError.text = state.errorText
-                    }
-                    is StateWrapper.Loading -> {
-                        showLoading()
-                    }
-                    else -> Unit
+    private fun subscribeUi(adapter: CharactersListAdapter) {
+        collectLatestLifecycleAware(viewModel.state) { state ->
+            when (state) {
+                is ScreenStateWrapper.Success<*> -> {
+                    val characters = state.data as? List<AllCharactersItem> ?: emptyList()
+                    adapter.submitList(characters)
+                    showList()
                 }
+                is ScreenStateWrapper.Error -> {
+                    showError()
+                    binding.tvError.text = state.errorText
+                }
+                is ScreenStateWrapper.Loading -> {
+                    showLoading()
+                }
+                else -> Unit
             }
         }
-        return binding.root
     }
 
     private fun showLoading() {
@@ -90,13 +100,11 @@ class CharsListFragment : Fragment(R.layout.fragment_chars_list) {
         }
     }
 
-    // settings up recycler view if state of fragment is Succeed
-    private fun setupRecyclerView(state: StateWrapper.Success) {
-        // retrieve characters list from Success(data)
-        val charactersList = state.data as List<*>
-        val adapter = CharactersListAdapter(charactersList as AllCharactersResponse)
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    private fun setupRecyclerView(adapter: CharactersListAdapter) {
+        binding.recyclerView.apply {
+            this.adapter = adapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
     }
 
     private fun setupToolbarWithNavController() {
@@ -112,4 +120,8 @@ class CharsListFragment : Fragment(R.layout.fragment_chars_list) {
         }
     }
 
+    private fun goToCharacterDetails(charId: Int) {
+        val action = CharsListFragmentDirections.actionCharsListFragmentToCharDetailFragment(charId)
+        findNavController().navigate(action)
+    }
 }

@@ -1,4 +1,4 @@
-package com.breakingBadGuide.ui
+package com.breakingBadGuide.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController

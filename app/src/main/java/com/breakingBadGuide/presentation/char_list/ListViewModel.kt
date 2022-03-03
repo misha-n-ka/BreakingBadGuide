@@ -1,11 +1,10 @@
-package com.breakingBadGuide.viewModels
+package com.breakingBadGuide.presentation.char_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.breakingBadGuide.data.responses.AllCharactersResponse
-import com.breakingBadGuide.repositories.Repository
-import com.breakingBadGuide.utils.ResponseWrapper
-import com.breakingBadGuide.utils.StateWrapper
+import com.breakingBadGuide.domain.repositories.Repository
+import com.breakingBadGuide.data.ResponseWrapper
+import com.breakingBadGuide.presentation.ScreenStateWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,25 +18,24 @@ class ListViewModel @Inject constructor(
 ) : ViewModel() {
 
     // StateFlow contains current fragment state
-    private val _state = MutableStateFlow<StateWrapper>(StateWrapper.Empty)
-    val state: StateFlow<StateWrapper> = _state
+    private val _state = MutableStateFlow<ScreenStateWrapper>(ScreenStateWrapper.Empty)
+    val state: StateFlow<ScreenStateWrapper> = _state
 
     fun getAllCharacters() {
         // Change fragment state to Loading
-        _state.value = StateWrapper.Loading
+        _state.value = ScreenStateWrapper.Loading
         viewModelScope.launch(Dispatchers.IO) {
-            when (val responseWrapper: ResponseWrapper<AllCharactersResponse> =
-                repository.getAllCharacters()
-            ) {
+            val response = repository.getAllCharacters()
+            when (response) {
                 // if network request is succeed
                 is ResponseWrapper.Success -> {
-                    val allCharsList = responseWrapper.data
+                    val allCharsList = response.data
                     _state.value =
-                        StateWrapper.Success(allCharsList!!)
+                        ScreenStateWrapper.Success(allCharsList!!)
                 }
                 // if network request has error
                 is ResponseWrapper.Error ->
-                    _state.value = StateWrapper.Fail(responseWrapper.message!!)
+                    _state.value = ScreenStateWrapper.Error(response.message ?: "Unknown Error")
             }
         }
     }

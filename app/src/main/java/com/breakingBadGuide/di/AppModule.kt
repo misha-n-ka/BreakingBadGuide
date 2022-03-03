@@ -1,8 +1,8 @@
 package com.breakingBadGuide.di
 
 import com.breakingBadGuide.data.BBApi
-import com.breakingBadGuide.repositories.MainRepository
-import com.breakingBadGuide.repositories.Repository
+import com.breakingBadGuide.data.repositories.MainRepository
+import com.breakingBadGuide.domain.repositories.Repository
 import com.breakingBadGuide.utils.Constants
 import dagger.Module
 import dagger.Provides

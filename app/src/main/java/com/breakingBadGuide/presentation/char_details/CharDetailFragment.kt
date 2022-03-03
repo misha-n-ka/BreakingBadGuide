@@ -1,4 +1,4 @@
-package com.breakingBadGuide.ui.fragments
+package com.breakingBadGuide.presentation.char_details
 
 import android.graphics.Color
 import android.os.Bundle
@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.AppBarConfiguration
@@ -17,11 +16,10 @@ import com.breakingBadGuide.R
 import com.breakingBadGuide.data.models.CharacterByIdItem
 import com.breakingBadGuide.databinding.FragmentCharDetailsBinding
 import com.breakingBadGuide.utils.CustomDateFormat
-import com.breakingBadGuide.utils.StateWrapper
-import com.breakingBadGuide.viewModels.DetailViewModel
+import com.breakingBadGuide.presentation.ScreenStateWrapper
+import com.breakingBadGuide.utils.collectLatestLifecycleAware
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class CharDetailFragment : Fragment(R.layout.fragment_char_details) {
@@ -42,34 +40,37 @@ class CharDetailFragment : Fragment(R.layout.fragment_char_details) {
         // getting a character by retrieved ID
         viewModel.getCharacterById(currentCharId)
 
+        setupListener(currentCharId)
+        subscribeUi()
+        return binding.root
+    }
+
+    private fun setupListener(characterId: Int) {
         // set OnClick Listener for reloading character if Error occurred
         binding.btnRetry.setOnClickListener {
-            viewModel.getCharacterById(currentCharId)
+            viewModel.getCharacterById(characterId)
         }
+    }
 
-        // collecting viewModel.state for observes fragment state
-        lifecycleScope.launchWhenStarted {
-            viewModel.state.collect { state ->
-                when (state) {
-                    is StateWrapper.Success -> {
-                        //retrieve CharacterById from Success(data)
-                        val character = state.data as CharacterByIdItem
-                        showDetailsLayout()
-                        setupCollapsingToolbarWithNavController()
-                        bindDetails(character)
-                    }
-                    is StateWrapper.Fail -> {
-                        showError()
-                        binding.tvError.text = state.errorText
-                    }
-                    is StateWrapper.Loading -> {
-                        showLoading()
-                    }
-                    else -> Unit
+    private fun subscribeUi() {
+        collectLatestLifecycleAware(viewModel.state) { state ->
+            when (state) {
+                is ScreenStateWrapper.Success<*> -> {
+                    val character = state.data as? CharacterByIdItem
+                    showDetails()
+                    setupCollapsingToolbarWithNavController()
+                    character?.let { bindDetails(it) }
                 }
+                is ScreenStateWrapper.Error -> {
+                    showError()
+                    binding.tvError.text = state.errorText
+                }
+                is ScreenStateWrapper.Loading -> {
+                    showLoading()
+                }
+                else -> Unit
             }
         }
-        return binding.root
     }
 
     private fun setupCollapsingToolbarWithNavController() {
@@ -91,7 +92,7 @@ class CharDetailFragment : Fragment(R.layout.fragment_char_details) {
         }
     }
 
-    private fun showDetailsLayout() {
+    private fun showDetails() {
         binding.apply {
             progressBar.isVisible = false
             errorLayout.isVisible = false

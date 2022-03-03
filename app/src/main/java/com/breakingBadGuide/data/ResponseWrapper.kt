@@ -1,4 +1,4 @@
-package com.breakingBadGuide.utils
+package com.breakingBadGuide.data
 
 // Wrapper for network responses
 sealed class ResponseWrapper<T>(val data: T?, val message: String?) {

@@ -7,17 +7,16 @@
     app:startDestination="@id/charsListFragment">
     <fragment
         android:id="@+id/charDetailFragment"
-        android:name="com.breakingBadGuide.ui.fragments.CharDetailFragment"
+        android:name="com.breakingBadGuide.presentation.char_details.CharDetailFragment"
         android:label="CharDetailFragment"
         tools:layout="@layout/fragment_char_details" >
         <argument
             android:name="charId"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/charsListFragment"
-        android:name="com.breakingBadGuide.ui.fragments.CharsListFragment"
+        android:name="com.breakingBadGuide.presentation.char_list.CharsListFragment"
         android:label="BB Characters"
         tools:layout="@layout/fragment_chars_list">
         <action
